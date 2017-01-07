@@ -130,29 +130,61 @@
           tr.appendChild(td);
 
           td = document.createElement('td');
-          td.innerText = row.ghz;
+          td.innerText = formatNumber(row.ghz, 2);
+          tr.appendChild(td);
+
+          var cb11s = row.score.cinebench['11.5'].single;
+          var cb11m = row.score.cinebench['11.5'].multi;
+          var cb15s = row.score.cinebench['15'].single;
+          var cb15m = row.score.cinebench['15'].multi;
+
+
+          td = document.createElement('td');
+          if(!cb11s && cb11m){
+            td.innerText = formatNumber(cb11m / row.cpus / row.cores, 2);
+            window._makeApprxToolTip(td);
+          }else{
+            td.innerText = formatNumber(cb11s, 2);
+          }
           tr.appendChild(td);
 
           td = document.createElement('td');
-          td.innerText = formatNumber(row.score.cinebench['11.5'].single, 2);
+          if(!cb11m && cb11s){
+            td.innerText = formatNumber(cb11s * row.cpus * row.cores, 2);
+            window._makeApprxToolTip(td);
+          }else{
+            td.innerText = formatNumber(cb11m, 2);
+          }
           tr.appendChild(td);
 
           td = document.createElement('td');
-          td.innerText = formatNumber(row.score.cinebench['11.5'].multi, 2);
+          if(!cb15s && cb15m){
+            td.innerText = formatNumber(cb15m / row.cpus / row.cores, 2);
+            window._makeApprxToolTip(td);
+          }else{
+            td.innerText = formatNumber(cb15s, 2);
+          }
           tr.appendChild(td);
 
           td = document.createElement('td');
-          td.innerText = formatNumber(row.score.cinebench['15'].single, 2);
-          tr.appendChild(td);
-
-          td = document.createElement('td');
-          td.innerText = formatNumber(row.score.cinebench['15'].multi, 2);
+          if(!cb15m && cb15s){
+            td.innerText = formatNumber(cb15s * row.cpus * row.cores, 2);
+            window._makeApprxToolTip(td);
+          }else{
+            td.innerText = formatNumber(cb15m, 2);
+          }
           tr.appendChild(td);
 
           dataContainer.appendChild(tr);
         });
       };
-
+      window._makeApprxToolTip = function (elem) {
+        elem.className += ' approximate tooltip';
+        var tt = document.createElement('span');
+        tt.innerText = 'This is an approximation based on other data points';
+        tt.className = 'tooltiptext';
+        elem.appendChild(tt);
+      };
       window._render = debounce(window._render, 350, false);
     </script>
 
@@ -169,7 +201,7 @@
     <div class="filter">
         <label>
             <span>Search</span>
-            <input type="text" placeholder='Ex: "intel", "AMD" or "i7 6700k"'>
+            <input autofocus type="text" placeholder='Ex: "intel", "AMD" or "i7 6700k"'>
         </label>
         <label>
             <span>in</span>

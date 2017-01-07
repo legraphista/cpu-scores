@@ -110,6 +110,15 @@ th {
     margin-top: 15px;
 }
 
+.data-table .approximate {
+    color: rgb(188, 188, 188);
+}
+
+.data-table .approximate:after {
+    content: '*';
+
+}
+
 input, select {
     outline: none;
     font-size: 1em;
@@ -138,4 +147,41 @@ input {
 
 input:focus {
     border-bottom: 3px solid #4CAF50;
+}
+
+.tooltip {
+    position: relative;
+}
+
+/* Tooltip text */
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 200px;
+    background-color: rgba(76, 175, 80, 0.80);
+    color: white;
+    text-align: center;
+    padding: 5px 0;
+
+    /* Position the tooltip text - see examples below! */
+    position: absolute;
+    z-index: 1;
+
+    left: 50%;
+    transform: translate(-50%, -120%);
+}
+
+.tooltip .tooltiptext::after {
+    content: " ";
+    position: absolute;
+    top: 100%; /* At the bottom of the tooltip */
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: rgba(76, 175, 80, 0.80) transparent transparent transparent;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+    visibility: visible;
 }
