@@ -138,47 +138,61 @@
           var cb15s = row.score.cinebench['15'].single;
           var cb15m = row.score.cinebench['15'].multi;
 
+          var appx_cb11s = !cb11s;
+          var appx_cb11m = !cb11m;
+          var appx_cb15s = !cb15s;
+          var appx_cb15m = !cb15m;
+
+          var magixNumber = 1 / 100 * 1.118558952;
+          if (!appx_cb15m) {
+            cb15s = cb15s || (cb15m / row.cpus / row.cores);
+
+            cb11m = cb11m || (cb15m * magixNumber);
+            cb11s = cb11s || (cb15s * magixNumber);
+          }
+          if (!appx_cb15s) {
+            cb15m = cb15m || (cb15s * row.cpus * row.cores);
+
+            cb11m = cb11m || (cb15m * magixNumber);
+            cb11s = cb11s || (cb15s * magixNumber);
+          }
+          if (!appx_cb11m) {
+            cb11s = cb11s || (cb11m / row.cpus / row.cores);
+
+            cb15m = cb15m || (cb11m / magixNumber);
+            cb15s = cb15s || (cb11s / magixNumber);
+          }
+          if (!appx_cb11s) {
+            cb11m = cb11m || (cb11s * row.cpus * row.cores);
+
+            cb15m = cb15m || (cb11m / magixNumber);
+            cb15s = cb15s || (cb11s / magixNumber);
+          }
 
           td = document.createElement('td');
-          if(!cb11s && cb11m){
-            td.innerText = formatNumber(cb11m / row.cpus / row.cores, 2);
-            window._makeApprxToolTip(td);
-          }else{
-            td.innerText = formatNumber(cb11s, 2);
-          }
+          td.innerText = formatNumber(cb11s, 2);
+          appx_cb11s && window._makeApprxToolTip(td);
           tr.appendChild(td);
 
           td = document.createElement('td');
-          if(!cb11m && cb11s){
-            td.innerText = formatNumber(cb11s * row.cpus * row.cores, 2);
-            window._makeApprxToolTip(td);
-          }else{
-            td.innerText = formatNumber(cb11m, 2);
-          }
+          td.innerText = formatNumber(cb11m, 2);
+          appx_cb11m && window._makeApprxToolTip(td);
           tr.appendChild(td);
 
           td = document.createElement('td');
-          if(!cb15s && cb15m){
-            td.innerText = formatNumber(cb15m / row.cpus / row.cores, 2);
-            window._makeApprxToolTip(td);
-          }else{
-            td.innerText = formatNumber(cb15s, 2);
-          }
+          td.innerText = formatNumber(cb15s, 2);
+          appx_cb15s && window._makeApprxToolTip(td);
           tr.appendChild(td);
 
           td = document.createElement('td');
-          if(!cb15m && cb15s){
-            td.innerText = formatNumber(cb15s * row.cpus * row.cores, 2);
-            window._makeApprxToolTip(td);
-          }else{
-            td.innerText = formatNumber(cb15m, 2);
-          }
+          td.innerText = formatNumber(cb15m, 2);
+          appx_cb15m && window._makeApprxToolTip(td);
           tr.appendChild(td);
 
           dataContainer.appendChild(tr);
         });
       };
-      window._makeApprxToolTip = function (elem) {
+      window._makeApprxToolTip = function(elem) {
         elem.className += ' approximate tooltip';
         var tt = document.createElement('span');
         tt.innerText = 'This is an approximation based on other data points';
@@ -189,7 +203,7 @@
     </script>
 
     <meta property="og:title" content="CPU Scores" />
-    <meta property="og:image" content="image.png"/>
+    <meta property="og:image" content="image.png" />
     <link rel="icon" href="favicon.ico">
 </head>
 <body>
