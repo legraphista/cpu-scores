@@ -103,11 +103,15 @@
         }
 
         var dataContainer = document.getElementById('data');
+        console.time('cleanup');
+//         cleanup
 
-        // cleanup
-        while (dataContainer.hasChildNodes()) {
-          dataContainer.removeChild(dataContainer.lastChild);
-        }
+        var table = dataContainer.parentNode;
+        table.removeChild(dataContainer);
+        dataContainer = document.createElement('tbody');
+        dataContainer.id = 'data';
+        table.appendChild(dataContainer);
+        console.timeEnd('cleanup');
 
         data.forEach(function(row) {
           var tr = document.createElement('tr');
