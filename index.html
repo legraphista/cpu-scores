@@ -113,6 +113,10 @@
         table.appendChild(dataContainer);
         console.timeEnd('cleanup');
 
+        if (window.isMobile) {
+          data = data.splice(0, 100);
+        }
+
         data.forEach(function(row) {
           var tr = document.createElement('tr');
           var td;
@@ -231,7 +235,7 @@
         <script>
           document.querySelector('.filter > label > input').oninput = function(e) {
             var text = e.target.value;
-            if(text.trim().toLowerCase() === window.filter.text.trim().toLowerCase()){
+            if (text.trim().toLowerCase() === window.filter.text.trim().toLowerCase()) {
               return;
             }
             window.filter.text = text;
