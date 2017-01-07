@@ -230,7 +230,11 @@
         </label>
         <script>
           document.querySelector('.filter > label > input').oninput = function(e) {
-            window.filter.text = e.target.value;
+            var text = e.target.value;
+            if(text.trim().toLowerCase() === window.filter.text.trim().toLowerCase()){
+              return;
+            }
+            window.filter.text = text;
             window._render();
           };
           document.querySelector('.filter > label > select').onchange = function(e) {
