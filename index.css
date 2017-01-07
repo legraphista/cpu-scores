@@ -1,0 +1,141 @@
+* {
+    font-family: "Roboto", "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+.fw {
+    width: 100%;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+th, td {
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+    padding: 15px;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2
+}
+
+tr:hover {
+    background-color: #d8d8d8
+}
+
+th {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.title {
+    text-align: center;
+}
+
+.options {
+    display: flex;
+    flex-direction: column;
+}
+
+.options > div {
+    position: relative;
+
+    display: flex;
+    flex-direction: row;
+    padding: 10px 30%;
+}
+
+@media (max-width: 1280px) {
+    .options > div {
+        padding: 10px 20%;
+    }
+}
+
+@media (max-width: 810px) {
+    .options > div {
+        padding: 10px 15px;
+    }
+}
+
+.options > div > label > * {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.options > div > label {
+    display: flex;
+    align-items: baseline;
+}
+
+.options .filter > label:first-child {
+    flex-grow: 1;
+}
+
+.options .filter > label:first-child > input {
+    flex-grow: 1;
+}
+
+.options .sort {
+    display: flex;
+}
+
+.options .sort label:first-child {
+    flex-grow: 1;
+}
+
+.options .sort label:first-child .sort-by {
+    flex-grow: 1;
+}
+
+.options .data-source {
+    flex-direction: column;
+}
+
+.options .data-source > * {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.options .data-source > h2 {
+    text-align: center;
+}
+
+.options .data-source > label {
+    justify-content: center;
+}
+
+.data-table {
+    overflow: auto;
+    margin-top: 15px;
+}
+
+input, select {
+    outline: none;
+    font-size: 1em;
+}
+
+input {
+    border: 0;
+    border-bottom: 2px solid #4CAF50;
+}
+
+select {
+    border-bottom: 2px solid #4CAF50;
+    -webkit-border-radius: 0px;
+    -moz-border-radius: 0px;
+    border-radius: 0px;
+}
+
+select:focus {
+    border-bottom: 3px solid #4CAF50;
+}
+
+input {
+    transition: all 0.15s ease-in;
+    padding-bottom: 2px;
+}
+
+input:focus {
+    border-bottom: 3px solid #4CAF50;
+}

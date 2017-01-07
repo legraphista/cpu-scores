@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CPU Scores</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+    <script src="helpers.js"></script>
+    <script src="cinebench-raw.js"></script>
+    <script>
+      window._source.singleCpu = window._source.raw.map(function(row) {
+        var shallowCopy = Object.assign({}, row);
+
+        var score = {
+          cinebench: {
+            '11.5': {
+              single: shallowCopy.score.cinebench['11.5'].single / shallowCopy.cpus || null,
+              multi: shallowCopy.score.cinebench['11.5'].multi / shallowCopy.cpus || null
+            },
+            '15': {
+              single: shallowCopy.score.cinebench['15'].single / shallowCopy.cpus || null,
+              multi: shallowCopy.score.cinebench['15'].multi / shallowCopy.cpus || null
+            }
+          }
+        };
+
+        shallowCopy.cpus = 1;
+        shallowCopy.score = score;
+
+        return shallowCopy;
+      });
+
+      window._restrictSpeed = function(_raw, ghz) {
+        return _raw.map(function(row) {
+          var shallowCopy = Object.assign({}, row);
+
+          var score = {
+            cinebench: {
+              '11.5': {
+                single: shallowCopy.score.cinebench['11.5'].single / shallowCopy.ghz * ghz || null,
+                multi: shallowCopy.score.cinebench['11.5'].multi / shallowCopy.ghz * ghz || null
+              },
+              '15': {
+                single: shallowCopy.score.cinebench['15'].single / shallowCopy.ghz * ghz || null,
+                multi: shallowCopy.score.cinebench['15'].multi / shallowCopy.ghz * ghz || null
+              }
+            }
+          };
+
+          shallowCopy.score = score;
+          shallowCopy.ghz = ghz;
+          return shallowCopy;
+        });
+      };
+
+      window._filter = function(_raw, text, prop) {
+        text = text.trim().split(/(\s|-|_|,)/g).filter(function(x) {
+          return x && x.trim();
+        });
+        return _raw.filter(function(row) {
+          return text.every(function(text) {
+            return ~row[prop].toLowerCase().indexOf(text.toLowerCase())
+          });
+        });
+      }
+    </script>
+
+    <script>
+      window.filter = {
+        prop: 'type',
+        text: ''
+      };
+
+      window.input = window._source.raw;
+
+      window.restrictedSpeed = null;
+
+      window.sort = {
+        descending: true,
+        prop: ['score', 'cinebench', '15', 'multi']
+      };
+
+      window._render = function() {
+        var data = window.input;
+        data = window._filter(data, window.filter.text, window.filter.prop);
+
+        if (window.restrictedSpeed) {
+          data = window._restrictSpeed(data, window.restrictedSpeed);
+        }
+
+        data.sort(function(a, b) {
+          var valA = a;
+          var valB = b;
+          window.sort.prop.forEach(function(prop) {
+            valA = valA[prop];
+            valB = valB[prop];
+          });
+
+          return valB - valA;
+        });
+        if (!window.sort.descending) {
+          data = data.reverse();
+        }
+
+        var dataContainer = document.getElementById('data');
+
+        // cleanup
+        while (dataContainer.hasChildNodes()) {
+          dataContainer.removeChild(dataContainer.lastChild);
+        }
+
+        data.forEach(function(row) {
+          var tr = document.createElement('tr');
+          var td;
+
+          td = document.createElement('td');
+          td.innerText = row.brand;
+          tr.appendChild(td);
+
+          td = document.createElement('td');
+          td.innerText = row.type;
+          tr.appendChild(td);
+
+          td = document.createElement('td');
+          td.innerText = row.cpus;
+          tr.appendChild(td);
+
+          td = document.createElement('td');
+          td.innerText = row.cores;
+          tr.appendChild(td);
+
+          td = document.createElement('td');
+          td.innerText = row.ghz;
+          tr.appendChild(td);
+
+          td = document.createElement('td');
+          td.innerText = formatNumber(row.score.cinebench['11.5'].single, 2);
+          tr.appendChild(td);
+
+          td = document.createElement('td');
+          td.innerText = formatNumber(row.score.cinebench['11.5'].multi, 2);
+          tr.appendChild(td);
+
+          td = document.createElement('td');
+          td.innerText = formatNumber(row.score.cinebench['15'].single, 2);
+          tr.appendChild(td);
+
+          td = document.createElement('td');
+          td.innerText = formatNumber(row.score.cinebench['15'].multi, 2);
+          tr.appendChild(td);
+
+          dataContainer.appendChild(tr);
+        });
+      };
+
+      window._render = debounce(window._render, 350, false);
+    </script>
+</head>
+<body>
+<div class="title fw">
+    <h1>CPU Scores</h1>
+</div>
+
+<div class="options">
+    <div class="filter">
+        <label>
+            <span>Search</span>
+            <input type="text" placeholder='Ex: "intel", "AMD" or "i7 6700k"'>
+        </label>
+        <label>
+            <span>in</span>
+            <select>
+                <option value="brand">Brand</option>
+                <option value="type" selected>CPU Type</option>
+            </select>
+        </label>
+        <script>
+          document.querySelector('.filter > label > input').oninput = function(e) {
+            window.filter.text = e.target.value;
+            window._render();
+          };
+          document.querySelector('.filter > label > select').onchange = function(e) {
+            window.filter.prop = e.target.value;
+            window._render();
+          }
+        </script>
+    </div>
+    <div class="sort">
+        <label>
+            <span>Sort by</span>
+            <select class="sort-by">
+                <option value="cores">Cores</option>
+                <option value="ghz">Ghz</option>
+                <option value="score cinebench 11.5 single">Score: CineBench 11.5 Single</option>
+                <option value="score cinebench 11.5 multi">Score: CineBench 11.5 Multi</option>
+                <option value="score cinebench 15 single">Score: CineBench 15 Single</option>
+                <option value="score cinebench 15 multi" selected>Score: CineBench 15 Multi</option>
+            </select>
+        </label>
+        <label>
+            <span>in</span>
+            <select class="order">
+                <option value="desc">Descending</option>
+                <option value="asc">Ascending</option>
+            </select>
+            <span>order</span>
+        </label>
+        <script>
+          document.querySelector('.sort > label > .sort-by').onchange = function(e) {
+            window.sort.prop = e.target.value.split(' ');
+            window._render();
+          };
+          document.querySelector('.sort > label > .order').onchange = function(e) {
+            switch (e.target.value) {
+              case 'desc':
+                window.sort.descending = true;
+                break;
+              case 'asc':
+                window.sort.descending = false;
+                break;
+            }
+            window._render();
+          }
+        </script>
+    </div>
+    <div class="data-source">
+        <h2>Options</h2>
+        <label>
+            <span>Calculate scores based on one CPU per system</span>
+            <input type="checkbox" name="cpu-cnt-chk">
+        </label>
+        <label>
+            <span>Calculate scores based on the same CPU clock speed</span>
+            <input type="number" name="cpu-ghz-nr" min="0.1" max="7" step="0.1" placeholder="4.0">
+        </label>
+        <script>
+          document.querySelector('.data-source input[name=cpu-cnt-chk]').onchange = function(e) {
+            if (e.target.checked) {
+              window.input = window._source.singleCpu
+            } else {
+              window.input = window._source.raw
+            }
+            window._render();
+          };
+          document.querySelector('.data-source input[name=cpu-ghz-nr]').onchange =
+            document.querySelector('.data-source input[name=cpu-ghz-nr]').onkeyup =
+              function(e) {
+                window.restrictedSpeed = parseFloat(e.target.value) || null;
+                window._render();
+              };
+        </script>
+    </div>
+</div>
+
+<div class="data-table fw">
+    <table class="fw">
+        <thead id="cb_benchmarks">
+        <tr>
+            <th>Brand</th>
+            <th>CPU Type</th>
+            <th>CPUs in system</th>
+            <th>Cores</th>
+            <th>GHz</th>
+            <th>Score: CineBench 11.5 Single</th>
+            <th>Score: CineBench 11.5 Multi</th>
+            <th>Score: CineBench 15 Single</th>
+            <th>Score: CineBench 15 Multi</th>
+        </tr>
+        </thead>
+        <tbody id="data">
+        </tbody>
+    </table>
+</div>
+
+<script>
+  window._render();
+</script>
+</body>
+</html>
