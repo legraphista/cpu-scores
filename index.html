@@ -336,6 +336,14 @@
 
 <script>
   window._render();
+
+  if (window.isMobile) {
+    var limitedMsg = document.createElement('h3');
+    limitedMsg.className = 'fw';
+    limitedMsg.style.textAlign = 'center';
+    limitedMsg.innerText = 'Results limited to 100 on mobile';
+    document.querySelector('body').appendChild(limitedMsg);
+  }
 </script>
 </body>
 </html>
