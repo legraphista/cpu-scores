@@ -156,11 +156,14 @@ input:focus {
 /* Tooltip text */
 .tooltip .tooltiptext {
     visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.2s ease-in;
+
     width: 200px;
-    background-color: rgba(76, 175, 80, 0.80);
+    background-color: rgba(76, 175, 80, 1);
     color: white;
     text-align: center;
-    padding: 5px 0;
+    padding: 5px 5px;
 
     /* Position the tooltip text - see examples below! */
     position: absolute;
@@ -184,4 +187,5 @@ input:focus {
 /* Show the tooltip text when you mouse over the tooltip container */
 .tooltip:hover .tooltiptext {
     visibility: visible;
+    opacity: 1;
 }
