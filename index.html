@@ -8,6 +8,55 @@
     <script src="helpers.js"></script>
     <script src="cinebench-raw.js"></script>
     <script>
+
+      window._source.raw.forEach(function(row) {
+        var cb11s = row.score.cinebench['11.5'].single;
+        var cb11m = row.score.cinebench['11.5'].multi;
+        var cb15s = row.score.cinebench['15'].single;
+        var cb15m = row.score.cinebench['15'].multi;
+
+        var appx_cb11s = !cb11s;
+        var appx_cb11m = !cb11m;
+        var appx_cb15s = !cb15s;
+        var appx_cb15m = !cb15m;
+
+        var magixNumber = 1 / 100 * 1.118558952;
+        if (!appx_cb15m) {
+          cb15s = cb15s || (cb15m / row.cpus / row.cores);
+
+          cb11m = cb11m || (cb15m * magixNumber);
+          cb11s = cb11s || (cb15s * magixNumber);
+        }
+        if (!appx_cb15s) {
+          cb15m = cb15m || (cb15s * row.cpus * row.cores);
+
+          cb11m = cb11m || (cb15m * magixNumber);
+          cb11s = cb11s || (cb15s * magixNumber);
+        }
+        if (!appx_cb11m) {
+          cb11s = cb11s || (cb11m / row.cpus / row.cores);
+
+          cb15m = cb15m || (cb11m / magixNumber);
+          cb15s = cb15s || (cb11s / magixNumber);
+        }
+        if (!appx_cb11s) {
+          cb11m = cb11m || (cb11s * row.cpus * row.cores);
+
+          cb15m = cb15m || (cb11m / magixNumber);
+          cb15s = cb15s || (cb11s / magixNumber);
+        }
+
+        row.score.cinebench['11.5'].single = cb11s;
+        row.score.cinebench['11.5'].multi = cb11m;
+        row.score.cinebench['15'].single = cb15s;
+        row.score.cinebench['15'].multi = cb15m;
+
+        row.score.cinebench['11.5'].single_approx = appx_cb11s;
+        row.score.cinebench['11.5'].multi_approx = appx_cb11m;
+        row.score.cinebench['15'].single_approx = appx_cb15s;
+        row.score.cinebench['15'].multi_approx = appx_cb15m;
+      });
+
       window._source.singleCpu = window._source.raw.map(function(row) {
         var shallowCopy = Object.assign({}, row);
 
@@ -15,11 +64,15 @@
           cinebench: {
             '11.5': {
               single: shallowCopy.score.cinebench['11.5'].single || null,
-              multi: shallowCopy.score.cinebench['11.5'].multi / shallowCopy.cpus || null
+              single_approx: shallowCopy.score.cinebench['11.5'].single_approx,
+              multi: shallowCopy.score.cinebench['11.5'].multi / shallowCopy.cpus || null,
+              multi_approx: shallowCopy.score.cinebench['11.5'].multi_approx,
             },
             '15': {
               single: shallowCopy.score.cinebench['15'].single || null,
-              multi: shallowCopy.score.cinebench['15'].multi / shallowCopy.cpus || null
+              single_approx: shallowCopy.score.cinebench['15'].single_approx,
+              multi: shallowCopy.score.cinebench['15'].multi / shallowCopy.cpus || null,
+              multi_approx: shallowCopy.score.cinebench['15'].multi_approx,
             }
           }
         };
@@ -146,36 +199,10 @@
           var cb15s = row.score.cinebench['15'].single;
           var cb15m = row.score.cinebench['15'].multi;
 
-          var appx_cb11s = !cb11s;
-          var appx_cb11m = !cb11m;
-          var appx_cb15s = !cb15s;
-          var appx_cb15m = !cb15m;
-
-          var magixNumber = 1 / 100 * 1.118558952;
-          if (!appx_cb15m) {
-            cb15s = cb15s || (cb15m / row.cpus / row.cores);
-
-            cb11m = cb11m || (cb15m * magixNumber);
-            cb11s = cb11s || (cb15s * magixNumber);
-          }
-          if (!appx_cb15s) {
-            cb15m = cb15m || (cb15s * row.cpus * row.cores);
-
-            cb11m = cb11m || (cb15m * magixNumber);
-            cb11s = cb11s || (cb15s * magixNumber);
-          }
-          if (!appx_cb11m) {
-            cb11s = cb11s || (cb11m / row.cpus / row.cores);
-
-            cb15m = cb15m || (cb11m / magixNumber);
-            cb15s = cb15s || (cb11s / magixNumber);
-          }
-          if (!appx_cb11s) {
-            cb11m = cb11m || (cb11s * row.cpus * row.cores);
-
-            cb15m = cb15m || (cb11m / magixNumber);
-            cb15s = cb15s || (cb11s / magixNumber);
-          }
+          var appx_cb11s = row.score.cinebench['11.5'].single_approx;
+          var appx_cb11m = row.score.cinebench['11.5'].multi_approx;
+          var appx_cb15s = row.score.cinebench['15'].single_approx;
+          var appx_cb15m = row.score.cinebench['15'].multi_approx;
 
           td = document.createElement('td');
           td.innerText = formatNumber(cb11s, 2);
